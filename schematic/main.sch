@@ -9049,7 +9049,6 @@ SOurce: www.abracon.com</description>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V7" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
-<part name="R3" library="resistor" deviceset="R-EU_" device="R0805" value="0R"/>
 <part name="QG1" library="crystal" deviceset="SM77H" device="" value="ASV-4.000MHZ-EJ-T"/>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
@@ -9132,7 +9131,6 @@ SOurce: www.abracon.com</description>
 <instance part="+3V5" gate="G$1" x="208.28" y="127"/>
 <instance part="+3V7" gate="G$1" x="149.86" y="60.96" rot="R90"/>
 <instance part="GND9" gate="1" x="162.56" y="71.12"/>
-<instance part="R3" gate="G$1" x="167.64" y="81.28"/>
 <instance part="QG1" gate="G$1" x="157.48" y="106.68"/>
 <instance part="+3V6" gate="G$1" x="144.78" y="114.3"/>
 <instance part="GND10" gate="1" x="144.78" y="96.52"/>
@@ -9256,9 +9254,11 @@ SOurce: www.abracon.com</description>
 <pinref part="U3" gate="G$1" pin="P$32"/>
 <wire x1="162.56" y1="76.2" x2="170.18" y2="76.2" width="0.1524" layer="91"/>
 <wire x1="170.18" y1="76.2" x2="170.18" y2="73.66" width="0.1524" layer="91"/>
-<pinref part="R3" gate="G$1" pin="1"/>
 <wire x1="162.56" y1="81.28" x2="162.56" y2="76.2" width="0.1524" layer="91"/>
 <junction x="162.56" y="76.2"/>
+<pinref part="U3" gate="G$1" pin="P$31"/>
+<wire x1="172.72" y1="81.28" x2="172.72" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="162.56" y1="81.28" x2="172.72" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND10" gate="1" pin="GND"/>
@@ -9549,13 +9549,6 @@ SOurce: www.abracon.com</description>
 <pinref part="U3" gate="G$1" pin="P$23"/>
 <wire x1="200.66" y1="58.42" x2="205.74" y2="58.42" width="0.1524" layer="91"/>
 <label x="205.74" y="58.42" size="1.27" layer="95" xref="yes"/>
-</segment>
-</net>
-<net name="N$1" class="0">
-<segment>
-<pinref part="R3" gate="G$1" pin="2"/>
-<pinref part="U3" gate="G$1" pin="P$31"/>
-<wire x1="172.72" y1="81.28" x2="172.72" y2="73.66" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="4MHZ" class="0">
