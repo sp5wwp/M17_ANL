@@ -9600,13 +9600,6 @@ SOurce: www.abracon.com</description>
 <label x="274.32" y="58.42" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="SPI_CS" class="0">
-<segment>
-<pinref part="U3" gate="G$1" pin="P$20"/>
-<wire x1="200.66" y1="50.8" x2="205.74" y2="50.8" width="0.1524" layer="91"/>
-<label x="205.74" y="50.8" size="1.27" layer="95" xref="yes"/>
-</segment>
-</net>
 <net name="NSEL" class="0">
 <segment>
 <pinref part="U3" gate="G$1" pin="P$19"/>
