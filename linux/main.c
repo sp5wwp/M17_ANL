@@ -136,15 +136,15 @@ int main(int argc, char *argv[])
 		{
 			if(!frame_rcv)
         	{
-        		for(uint16_t j=0; j<4; j++)
+        		for(uint16_t j=0; j<5; j++)
         			SerialBuffer[j]=SerialBuffer[j+1];
         	
-	        	SerialBuffer[4] = TempChar;// Store Tempchar into buffer
+	        	SerialBuffer[5] = TempChar;// Store Tempchar into buffer
 	        }
 	        else
 	        {
 	        	cnt++;
-	        	SerialBuffer[4+cnt] = TempChar;
+	        	SerialBuffer[5+cnt] = TempChar;
 	        	
 	        	if(cnt==97)	//got full frame
 	        	{
@@ -180,14 +180,14 @@ int main(int argc, char *argv[])
 						}
 	        		}
 	        		
-	        		for(uint16_t j=0; j<5; j++)
+	        		for(uint16_t j=0; j<6; j++)
         				SerialBuffer[j]=0;
 					frame_rcv=0;
 	        		cnt=0;
 	        	}
 	        }
 	             
-	        if(SerialBuffer[0]=='F' && SerialBuffer[1]=='R' && SerialBuffer[2]=='A' && SerialBuffer[3]=='M' && SerialBuffer[4]=='E')
+	        if(SerialBuffer[0]=='F' && SerialBuffer[1]=='R' && SerialBuffer[2]=='A' && SerialBuffer[3]=='M' && SerialBuffer[4]=='E' && SerialBuffer[5]=='=')
 	        {
 	        	frame_rcv=1;
 	    	}
