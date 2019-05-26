@@ -149,16 +149,17 @@ int main(int argc, char *argv[])
 	        	if(cnt==97)	//got full frame
 	        	{
 	        		//extract data
-	        		rcv.content_type=(SerialBuffer[5+0]>>6)&3;
-					rcv.enc_type=(SerialBuffer[5+0]>>4)&3;
-					rcv.frame=((SerialBuffer[5+0]&0x0F)<<8) | SerialBuffer[5+1];
+	        		rcv.content_type=(SerialBuffer[6+0]>>6)&3;
+					rcv.enc_type=(SerialBuffer[6+0]>>4)&3;
+					rcv.frame=((SerialBuffer[6+0]&0x0F)<<8) | SerialBuffer[6+1];
 
-					rcv.sender_id=((uint32_t)SerialBuffer[5+2]<<16) | ((uint32_t)SerialBuffer[5+3]<<8) | SerialBuffer[5+4];
-					rcv.recipient_id=((uint32_t)SerialBuffer[5+5]<<16) | ((uint32_t)SerialBuffer[5+6]<<8) | SerialBuffer[5+7];
+					rcv.sender_id=((uint32_t)SerialBuffer[6+2]<<16) | ((uint32_t)SerialBuffer[6+3]<<8) | SerialBuffer[6+4];
+					rcv.recipient_id=((uint32_t)SerialBuffer[6+5]<<16) | ((uint32_t)SerialBuffer[6+6]<<8) | SerialBuffer[6+7];
 					
+					#ifdef PLAYAUDIO
 					if(rcv.content_type==CONTENT_VOICE) //play audio
 					{
-						for(uint8_t i=13, j=0; i<13+32-1; i+=2, j++)
+						for(uint8_t i=14, j=0; i<14+32-1; i+=2, j++)
 						{
 							bits[j]=SerialBuffer[i];
 						}
@@ -179,7 +180,10 @@ int main(int argc, char *argv[])
 							printf("%c", (uint8_t)(samples[i]&0xFF));
 						}
 	        		}
-	        		
+					#else
+					printf("%d\t%d\t\n", rcv.content_type, rcv.frame);
+	        		#endif
+
 	        		for(uint16_t j=0; j<6; j++)
         				SerialBuffer[j]=0;
 					frame_rcv=0;
