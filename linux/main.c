@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 	set_interface_attribs(fd, B230400, 0);  // set speed to 230,400 bps, 8n1 (no parity)
 	set_blocking (fd, 0);                // set no blocking
 
-	printf("Opening serial port successful, listening...\t\t\t Payload:\n");
+	printf("Opening serial port successful, listening...\t\t\tPayload:\n");
 
 	while(1)
 	{
@@ -180,8 +180,30 @@ int main(int argc, char *argv[])
 							printf("%c", (uint8_t)(samples[i]&0xFF));
 						}
 	        		}
+
 					#else
-					printf("%d\t%d\t\n", rcv.content_type, rcv.frame);
+					printf("F%03d\t", rcv.frame);
+
+					if(rcv.content_type==CONTENT_VOICE)
+						printf("VOICE\t");
+					else if(rcv.content_type==CONTENT_DATA)
+						printf("DATA\t");
+					else if(rcv.content_type==CONTENT_VOICE_DATA)
+						printf("V+D\t");
+
+					if(rcv.enc_type==ENC_NONE)
+						printf("ENCR_NONE\t");
+					else if(rcv.enc_type==ENC_STATIC_KEY)
+						printf("ENCR_STATIC\t");
+					else if(rcv.enc_type==ENC_DYNAMIC_KEY)
+						printf("ENCR_DYNAMIC\t");
+
+					printf("%d->%d\t\t", rcv.sender_id, rcv.recipient_id);
+
+					for(uint8_t i=14, j=0; i<14+32-1; i+=2, j++)
+						printf("%02X", SerialBuffer[i]);
+
+					printf("\n");
 	        		#endif
 
 	        		for(uint16_t j=0; j<6; j++)
