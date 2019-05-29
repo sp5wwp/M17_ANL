@@ -53,13 +53,25 @@
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
 
+TIM_HandleTypeDef htim2;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+//UART RELATED
+volatile uint8_t    rcvd[22];           //receiving buffer
+volatile uint8_t    rcv_cnt=0;          //received bytes counter
+volatile uint8_t    *extr_val;          //for extracted value
+volatile uint8_t    extr_val_len=0;     //number of digits
+volatile uint32_t   val=0;              //value
+volatile uint8_t    first_tim_int=1;    //first timer interrupt? for uart rcv timeout
+
+volatile uint8_t    tx_pwr=0;
+volatile uint32_t   trx_freq=0;
 
 //Si 446x RELATED
-const uint8_t config[] = RADIO_CONFIGURATION_DATA_ARRAY;
+static const uint8_t config[] = RADIO_CONFIGURATION_DATA_ARRAY;
 volatile uint8_t ints[8];					//interrupts
 
 //RADIO STATE
@@ -75,6 +87,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_TIM2_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -382,6 +395,149 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		Si_Interrupts(NULL);
 	}
 }
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    /*if(strstr(rcvd, "AT+FREQ?") && strstr(strstr(rcvd, "AT+FREQ?"), "\r\n"))
+    {
+        uint8_t resp[22];
+        sprintf(resp, "FREQ=%lu\r\n", trx_freq);
+        HAL_UART_Transmit(&huart2, resp, strlen(resp), 100);
+
+        memset(rcvd, 0, 22);
+        rcv_cnt=0;
+        HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
+    }
+    else if(strstr(rcvd, "AT+PWR?") && strstr(strstr(rcvd, "AT+PWR?"), "\r\n"))
+    {
+        uint8_t resp[22];
+        sprintf(resp, "PWR=%u\r\n", tx_pwr);
+        HAL_UART_Transmit(&huart2, resp, strlen(resp), 100);
+
+        memset(rcvd, 0, 22);
+        rcv_cnt=0;
+        HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
+    }
+    else*/ if(strstr(rcvd, "AT+PWR=") && strstr(strstr(rcvd, "AT+PWR="), "\r\n"))
+    {
+        extr_val=strstr(rcvd, "AT+PWR=")+7;
+        for(uint8_t i=0; i<12; i++)
+        {
+            if((extr_val[i]<'0' || extr_val[i]>'9') && (extr_val[i]!='\r' && extr_val[i]!='\n'))
+            {
+                extr_val_len=0;
+                break;
+            }
+            if(extr_val[i]=='\r')
+            {
+                extr_val_len=i;
+                break;
+            }
+        }
+
+        if(extr_val_len!=0)
+        {
+            uint32_t mult=1;
+            for(int8_t i=extr_val_len-1; i>=0; i--)
+            {
+                val+=(extr_val[i]-'0')*mult;
+                mult*=10;
+            }
+
+            tx_pwr=val;
+
+            /*uint8_t resp[22];
+            sprintf(resp, "PWR=%u\r\n", val);*/
+            HAL_UART_Transmit(&huart2, "OK\r\n", 4, 100);
+        }
+        else
+        {
+            HAL_UART_Transmit(&huart2, "ERROR\r\n", 7, 100);
+        }
+        val=0;
+        memset(rcvd, 0, 22);
+        rcv_cnt=0;
+        HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
+    }
+    else if(strstr(rcvd, "AT+FREQ=") && strstr(strstr(rcvd, "AT+FREQ="), "\r\n"))
+    {
+        extr_val=strstr(rcvd, "AT+FREQ=")+8;
+        for(uint8_t i=0; i<12; i++)
+        {
+            if((extr_val[i]<'0' || extr_val[i]>'9') && (extr_val[i]!='\r' && extr_val[i]!='\n'))
+            {
+                extr_val_len=0;
+                break;
+            }
+            if(extr_val[i]=='\r')
+            {
+                extr_val_len=i;
+                break;
+            }
+        }
+
+        if(extr_val_len!=0)
+        {
+            uint32_t mult=1;
+            for(int8_t i=extr_val_len-1; i>=0; i--)
+            {
+                val+=(extr_val[i]-'0')*mult;
+                mult*=10;
+            }
+
+            trx_freq=val;
+            //Si_FreqSet(trx_freq);
+
+            /*uint8_t resp[22];
+            sprintf(resp, "FREQ=%lu\r\n", val);*/
+            HAL_UART_Transmit(&huart2, "OK\r\n", 4, 100);
+        }
+        else
+        {
+            HAL_UART_Transmit(&huart2, "ERROR\r\n", 7, 100);
+        }
+
+        val=0;
+        memset(rcvd, 0, 22);
+        rcv_cnt=0;
+        HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
+    }
+    /*else if(strstr(rcvd, "AT+FRAME=") && strstr(strstr(rcvd, "AT+FRAME="), "\r\n"))
+    {
+    	*rcv_buff=strstr(rcvd, "AT+FRAME=")+9;
+
+        //TODO: add code here
+
+        HAL_UART_Transmit(&huart2, "OK\r\n", 4, 100);
+
+        val=0;
+        memset(rcvd, 0, 22);
+        rcv_cnt=0;
+        HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
+    }*/
+    else
+    {
+        rcv_cnt++;
+        HAL_UART_Receive_IT(&huart2, &rcvd[rcv_cnt], 1);
+        TIM2->CNT=0;
+        HAL_TIM_Base_Start_IT(&htim2);
+    }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if(first_tim_int)
+        first_tim_int=0;
+    else
+    {
+        memset(rcvd, 0, 22);
+        rcv_cnt=0;
+        HAL_UART_AbortReceive_IT(&huart2);
+        HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
+        HAL_TIM_Base_Stop_IT(&htim2);
+        TIM2->CNT=0;
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -392,6 +548,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  memset(rcvd, 0, 22);
 
   /* USER CODE END 1 */
 
@@ -415,6 +572,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   //HAL_GPIO_WritePin(NSEL_GPIO_Port, NSEL_Pin, 0);
   RF_SetRX();
@@ -435,6 +593,7 @@ int main(void)
   r_initd=1;	//we need this to avoid getting Si IRQ request right after power-up sequence
 
   HAL_UART_Transmit(&huart2, "M17_ANL INIT OK\r\n", 17, 100);
+  HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -530,6 +689,38 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi1.Init.CRCPolynomial = 7;
   if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* TIM2 init function */
+static void MX_TIM2_Init(void)
+{
+
+  TIM_ClockConfigTypeDef sClockSourceConfig;
+  TIM_MasterConfigTypeDef sMasterConfig;
+
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 31999;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 99;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
