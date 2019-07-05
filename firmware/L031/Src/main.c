@@ -56,6 +56,7 @@
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim21;
 
 UART_HandleTypeDef huart2;
 
@@ -82,6 +83,9 @@ volatile uint8_t r_initd=0;					//initialized?
 //RCV FIELDS - EXTRACTED FROM RECEIVED DATA
 volatile uint8_t rcv_buff[PLOAD_LEN];
 volatile uint8_t rcv_voice[RAW_BYTES];
+
+//TX-RX
+volatile uint8_t first_rx=1;						//is this the first TX->RX switchover?
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,6 +94,7 @@ static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM21_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -409,6 +414,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				RF_SetTX();
 				memcpy(rcv_buff, &rcvd[9], PLOAD_LEN);
 				Si_TxData(rcv_buff, PLOAD_LEN, 0);
+				HAL_TIM_Base_Start_IT(&htim21);
 				HAL_UART_Transmit(&huart2, "OK\r\n", 4, 100);
 				memset(rcvd, 0, sizeof(rcvd));
 				rcv_cnt=0;
@@ -530,16 +536,32 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if(first_tim_int)
-		first_tim_int=0;
-	else
+	if(htim->Instance==TIM2)	//10ms UART receive timeout
 	{
-		memset(rcvd, 0, sizeof(rcvd));
-		rcv_cnt=0;
-		HAL_UART_AbortReceive_IT(&huart2);
-		HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
-		HAL_TIM_Base_Stop_IT(&htim2);
-		TIM2->CNT=0;
+		if(first_tim_int)
+			first_tim_int=0;
+		else
+		{
+			memset(rcvd, 0, sizeof(rcvd));
+			rcv_cnt=0;
+			HAL_UART_AbortReceive_IT(&huart2);
+			HAL_UART_Receive_IT(&huart2, &rcvd[0], 1);
+			HAL_TIM_Base_Stop_IT(&htim2);
+			TIM2->CNT=0;
+		}
+	}
+	else if(htim->Instance==TIM21)	//30ms after starting TX switch back to RX mode
+	{
+		if(first_rx)
+		{
+			first_rx=0;
+		}
+		else
+		{
+			Si_StartRx(0, PLOAD_LEN);
+			HAL_TIM_Base_Stop_IT(&htim21);
+			TIM21->CNT=0;
+		}
 	}
 }
 /* USER CODE END 0 */
@@ -576,6 +598,7 @@ int main(void)
   MX_TIM2_Init();
   MX_SPI1_Init();
   MX_USART2_UART_Init();
+  MX_TIM21_Init();
   /* USER CODE BEGIN 2 */
   //HAL_GPIO_WritePin(NSEL_GPIO_Port, NSEL_Pin, 0);
   RF_SetRX();
@@ -724,6 +747,38 @@ static void MX_TIM2_Init(void)
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* TIM21 init function */
+static void MX_TIM21_Init(void)
+{
+
+  TIM_ClockConfigTypeDef sClockSourceConfig;
+  TIM_MasterConfigTypeDef sMasterConfig;
+
+  htim21.Instance = TIM21;
+  htim21.Init.Prescaler = 31999;
+  htim21.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim21.Init.Period = 29;
+  htim21.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  if (HAL_TIM_Base_Init(&htim21) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim21, &sClockSourceConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim21, &sMasterConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
