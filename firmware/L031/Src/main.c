@@ -615,6 +615,7 @@ int main(void)
   Si_Sleep();
   trx_freq=439575000;
   Si_FreqSet(trx_freq);
+  Si_SetTxPower(tx_pwr);
   Si_StartRx(0, PLOAD_LEN);
   r_initd=1;	//we need this to avoid getting Si IRQ request right after power-up sequence
 
