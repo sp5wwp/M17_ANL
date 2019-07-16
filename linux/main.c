@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 					rcv.sender_id=((uint32_t)SerialBuffer[6+19]<<16) | ((uint32_t)SerialBuffer[6+20]<<8) | SerialBuffer[6+21];
 					rcv.recipient_id=((uint32_t)SerialBuffer[6+22]<<16) | ((uint32_t)SerialBuffer[6+23]<<8) | SerialBuffer[6+24];
 					
-					rcv.crc=((uint32_t)SerialBuffer[6+51]<<8) | SerialBuffer[6+52];
+					rcv.crc=((uint16_t)SerialBuffer[6+51]<<8) | SerialBuffer[6+52];
 					
 					#ifdef PLAYAUDIO
 					if(rcv.content_type==CONTENT_VOICE) //play audio
