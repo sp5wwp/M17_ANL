@@ -153,16 +153,15 @@ int main(int argc, char *argv[])
 					rcv.enc_type=(SerialBuffer[6+0]>>4)&3;
 					rcv.frame=((SerialBuffer[6+0]&0x0F)<<8) | SerialBuffer[6+1];
 
-					rcv.sender_id=((uint32_t)SerialBuffer[6+2]<<16) | ((uint32_t)SerialBuffer[6+3]<<8) | SerialBuffer[6+4];
-					rcv.recipient_id=((uint32_t)SerialBuffer[6+5]<<16) | ((uint32_t)SerialBuffer[6+6]<<8) | SerialBuffer[6+7];
+					rcv.sender_id=((uint32_t)SerialBuffer[6+19]<<16) | ((uint32_t)SerialBuffer[6+20]<<8) | SerialBuffer[6+21];
+					rcv.recipient_id=((uint32_t)SerialBuffer[6+22]<<16) | ((uint32_t)SerialBuffer[6+23]<<8) | SerialBuffer[6+24];
+					
+					rcv.crc=((uint32_t)SerialBuffer[6+51]<<8) | SerialBuffer[6+52];
 					
 					#ifdef PLAYAUDIO
 					if(rcv.content_type==CONTENT_VOICE) //play audio
 					{
-						for(uint8_t i=14, j=0; i<14+32-1; i+=2, j++)
-						{
-							bits[j]=SerialBuffer[i];
-						}
+						memcpy(bits, &SerialBuffer[6+35], RAW_BYTES)
 
 						codec2_decode(cod, &samples[0], &bits[0]);
 						codec2_decode(cod, &samples[160], &bits[8]);
@@ -200,7 +199,7 @@ int main(int argc, char *argv[])
 
 					printf("%d->%d\t\t", rcv.sender_id, rcv.recipient_id);
 
-					for(uint8_t i=14, j=0; i<14+32-1; i+=2, j++)
+					for(uint8_t i=6+35; i<6+35+RAW_BYTES-1; j++)
 						printf("%02X", SerialBuffer[i]);
 
 					printf("\n");
