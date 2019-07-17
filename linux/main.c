@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 					#ifdef PLAYAUDIO
 					if(rcv.content_type==CONTENT_VOICE) //play audio
 					{
-						memcpy(bits, &SerialBuffer[6+35], RAW_BYTES)
+						memcpy(bits, &SerialBuffer[6+35], FRAME_BYTES)
 
 						codec2_decode(cod, &samples[0], &bits[0]);
 						codec2_decode(cod, &samples[160], &bits[8]);
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
 
 					printf("%d->%d\t\t", rcv.sender_id, rcv.recipient_id);
 
-					for(uint8_t i=6+35; i<6+35+RAW_BYTES-1; j++)
+					for(uint8_t i=6+35; i<6+35+FRAME_BYTES-1; i++)
 						printf("%02X", SerialBuffer[i]);
 
 					printf("\n");
