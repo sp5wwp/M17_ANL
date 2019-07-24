@@ -3094,7 +3094,7 @@ design rules under a new name.</description>
 <attribute name="PACKAGE" value="VFQFN-20 Silicon Labs" x="51.4275" y="9.525" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
 <element name="U2" library="CG2179M2" package="SOT363" value="CG2179M2" x="65.715" y="3.4925" rot="R270"/>
-<element name="U3" library="STM32L011" package="LQFP32-7X7" value="STM32L011" x="38.4175" y="8.5725"/>
+<element name="U3" library="STM32L011" package="LQFP32-7X7" value="STM32L031K6T6" x="38.4175" y="8.5725"/>
 <element name="X1" library="con-coax" package="J502-ND-142-0711-821/826" value="SMA" x="77" y="9.5" rot="R180">
 <attribute name="OC_FARNELL" value="1019328" x="77" y="9.5" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="MPN" value="142-0711-821" x="77" y="9.5" size="1.778" layer="27" rot="R180" display="off"/>

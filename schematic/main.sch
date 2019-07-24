@@ -9024,7 +9024,7 @@ SOurce: www.abracon.com</description>
 <part name="IC1" library="ftdichip" deviceset="FT232R" device="L"/>
 <part name="U1" library="SI4463-C2A-GM" deviceset="SI4463-C2A-GM" device=""/>
 <part name="U2" library="CG2179M2" deviceset="CG2179M2" device=""/>
-<part name="U3" library="STM32L011" deviceset="STM32L011" device=""/>
+<part name="U3" library="STM32L011" deviceset="STM32L011" device="" value="STM32L031K6T6"/>
 <part name="X1" library="con-coax" deviceset="SMA-" device="142-0711-821/826" value="SMA"/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="C1" library="rcl" deviceset="C-EU" device="C1206" value="4u7"/>
