@@ -9,6 +9,8 @@
 #include <math.h>
 #include "codec2.h"
 
+//#define		PLAYAUDIO
+
 #define		FRAME_BYTES					16
 
 #define		CONTENT_VOICE				1
@@ -161,7 +163,7 @@ int main(int argc, char *argv[])
 					#ifdef PLAYAUDIO
 					if(rcv.content_type==CONTENT_VOICE) //play audio
 					{
-						memcpy(bits, &SerialBuffer[6+35], FRAME_BYTES)
+						memcpy(bits, &SerialBuffer[6+35], FRAME_BYTES);
 
 						codec2_decode(cod, &samples[0], &bits[0]);
 						codec2_decode(cod, &samples[160], &bits[8]);
