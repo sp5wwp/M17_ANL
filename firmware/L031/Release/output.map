@@ -88,7 +88,7 @@ errno               0x4               c:/systemworkbench/plugins/fr.ac6.mcu.exte
 ints                0x8               Src/main.o
 uwTick              0x4               Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal.o
 pFlash              0x18              Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash.o
-rcv_buff            0x61              Src/main.o
+rcv_buff            0x5d              Src/main.o
 rcv_voice           0x10              Src/main.o
 rcvd                0x6e              Src/main.o
 hspi1               0x58              Src/main.o
@@ -4342,7 +4342,7 @@ LOAD c:/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.2
  .igot.plt      0x2000006c        0x0 c:/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v6-m/crtbegin.o
                 0x2000006c                . = ALIGN (0x4)
 
-.bss            0x2000006c      0x274 load address 0x080050fc
+.bss            0x2000006c      0x270 load address 0x080050fc
                 0x2000006c                _sbss = .
                 0x2000006c                __bss_start__ = _sbss
  *(.bss)
@@ -4367,25 +4367,26 @@ LOAD c:/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.2
  *(COMMON)
  COMMON         0x200000a8        0x4 Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal.o
                 0x200000a8                uwTick
- COMMON         0x200000ac      0x230 Src/main.o
+ COMMON         0x200000ac      0x22c Src/main.o
                 0x200000ac                ints
                 0x200000b4                rcv_buff
-                0x20000118                rcv_voice
-                0x20000128                rcvd
-                0x20000198                hspi1
-                0x200001f0                htim2
-                0x20000228                huart2
-                0x20000298                extr_val
-                0x200002a4                htim21
- COMMON         0x200002dc        0x4 c:/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v6-m\libc_nano.a(lib_a-reent.o)
-                0x200002dc                errno
-                0x200002e0                . = ALIGN (0x4)
-                0x200002e0                _ebss = .
-                0x200002e0                __bss_end__ = _ebss
+                0x20000114                rcv_voice
+                0x20000124                rcvd
+                0x20000194                hspi1
+                0x200001ec                htim2
+                0x20000224                huart2
+                0x20000294                extr_val
+                0x200002a0                htim21
+ COMMON         0x200002d8        0x4 c:/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v6-m\libc_nano.a(lib_a-reent.o)
+                0x200002d8                errno
+                0x200002dc                . = ALIGN (0x4)
+                0x200002dc                _ebss = .
+                0x200002dc                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x200002e0      0x600 load address 0x080050fc
+                0x200002dc      0x604 load address 0x080050fc
                 0x200002e0                . = ALIGN (0x8)
+ *fill*         0x200002dc        0x4 
                 0x200002e0                PROVIDE (end = .)
                 [!provide]                PROVIDE (_end = .)
                 0x200004e0                . = (. + _Min_Heap_Size)

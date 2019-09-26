@@ -47,7 +47,7 @@
 #define	RAW_BYTES		8*2
 #define	CRC_LEN			2
 #define	ENC_LEN			(RAW_BYTES)*2
-#define	PLOAD_LEN		97
+#define	PLOAD_LEN		93
 
 #define RCVD_BUFF_LEN	110
 /* USER CODE END Includes */
