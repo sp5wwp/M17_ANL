@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 	        	cnt++;
 	        	SerialBuffer[5+cnt] = TempChar;
 	        	
-	        	if(cnt==97)	//got full frame
+	        	if(cnt==93)	//got full frame
 	        	{
 	        		//extract data
 	        		rcv.content_type=(SerialBuffer[6+0]>>6)&3;
